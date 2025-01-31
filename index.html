@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate AI-Powered Language Model Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; transition: background 0.5s, color 0.5s; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        select, button { padding: 10px; margin-top: 10px; }
+        .dark-mode { background-color: #121212; color: white; }
+        .editor-container { height: 300px; border: 1px solid #ccc; border-radius: 5px; margin-top: 10px; }
+        .download-btn { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ultimate AI-Powered Language Model Builder</h1>
+        <p>Select a programming language to see and edit the code:</p>
+        <select id="languageSelector" onchange="updateCode()">
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+            <option value="rust">Rust</option>
+            <option value="go">Go</option>
+            <option value="swift">Swift</option>
+            <option value="php">PHP</option>
+            <option value="kotlin">Kotlin</option>
+            <option value="julia">Julia</option>
+            <option value="lua">Lua</option>
+            <option value="typescript">TypeScript</option>
+        </select>
+        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        <button onclick="downloadCode()">Download Code</button>
+        <button onclick="startSpeechRecognition()">🎙️ Voice Coding</button>
+        <button onclick="generateAIcode()">🤖 AI Generate Code</button>
+        <div class="editor-container" id="editor"></div>
+        <button onclick="runJavaScript()">Run JavaScript Code</button>
+        <pre><code id="output"></code></pre>
+    </div>
+    <script>
+        const socket = io("https://your-realtime-server.com");
+        const codeSamples = {
+            python: "# AI will generate code here...",
+            javascript: "console.log(\"Hello, World!\");",
+            cpp: "#include <iostream>\nusing namespace std;\nint main() { cout << \"Hello, C++!\" << endl; return 0; }",
+            java: "public class Main { public static void main(String[] args) { System.out.println(\"Hello, Java!\"); } }",
+            rust: "fn main() { println!(\"Hello, Rust!\"); }",
+            go: "package main\nimport \"fmt\"\nfunc main() { fmt.Println(\"Hello, Go!\") }",
+            swift: "import Foundation\nprint(\"Hello, Swift!\")",
+            php: "<?php echo \"Hello, PHP!\"; ?>",
+            kotlin: "fun main() { println(\"Hello, Kotlin!\") }",
+            julia: "println(\"Hello, Julia!\")",
+            lua: "print(\"Hello, Lua!\")",
+            typescript: "console.log(\"Hello, TypeScript!\");"
+        };
+
+        function updateCode() {
+            const selectedLanguage = document.getElementById("languageSelector").value;
+            editor.setValue(codeSamples[selectedLanguage]);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            editor.setTheme(document.body.classList.contains("dark-mode") ? "ace/theme/monokai" : "ace/theme/github");
+        }
+
+        function downloadCode() {
+            const code = editor.getValue();
+            const blob = new Blob([code], { type: "text/plain" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "code.txt";
+            a.click();
+        }
+
+        function runJavaScript() {
+            try {
+                const output = eval(editor.getValue());
+                document.getElementById("output").innerText = output !== undefined ? output : "Code executed successfully!";
+            } catch (err) {
+                document.getElementById("output").innerText = "Error: " + err;
+            }
+        }
+
+        function startSpeechRecognition() {
+            if (annyang) {
+                annyang.addCommands({
+                    "write *code": function(code) {
+                        editor.insert(code);
+                    }
+                });
+                annyang.start();
+                alert("Voice recognition started! Say 'Write function hello world'.");
+            }
+        }
+
+        function generateAIcode() {
+            editor.setValue("// AI is generating your code...");
+            setTimeout(() => {
+                editor.setValue("console.log(\"AI-generated Hello, World!\");");
+            }, 2000);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            window.editor = ace.edit("editor");
+            editor.setTheme("ace/theme/github");
+            editor.session.setMode("ace/mode/javascript");
+            updateCode();
+        });
+    </script>
+</body>
+</html>
